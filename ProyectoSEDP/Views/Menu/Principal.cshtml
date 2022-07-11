@@ -1,0 +1,77 @@
+﻿
+@{
+    Layout = "";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+
+<body style="background-color: #e6f4ff;">
+    <header class="sticky-top">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Atras</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+    <center style="max-width:50%; margin:auto;">
+
+        <hr />
+        <form id="frm">
+            <br />
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Administracion</h5>
+                    <p class="card-text">Ventanas donde se administran usuarios,roles,perfiles,entre otros</p>
+                    <a href="/Usuario/Usuarios" class="btn btn-primary">Acceder</a>
+                </div>
+            </div>
+            <br />
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Planificacion</h5>
+                    <p class="card-text">Ventanas donde se pueden ver, crear y modificar planes de evaluacion</p>
+                    <a href="/Planificacion/Planificaciones" class="btn btn-primary">Acceder</a>
+                </div>
+            </div>
+            <br />
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Evaluacion</h5>
+                    <p class="card-text">Ventanas donde se pueden ver, crear y modificar evaluaciones</p>
+                    <a href="/Evaluacion/Evaluaciones" class="btn btn-primary">Acceder</a>
+                </div>
+            </div>
+            <br />
+
+        </form>
+        <hr />
+        <div id="divLista"></div>
+    </center>
+
+</body>
+
+<script>
+    function administracion() {
+        window.location.href = '/Home/Index';
+    }
+
+    function planificacion() {
+        window.location.href = '/Planificacion/Planificaciones';
+    }
+
+    function evaluacion() {
+        window.location.href = '/Evaluacion/Evaluaciones';
+    }
+</script>
+</html>

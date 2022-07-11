@@ -1,0 +1,226 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<body>
+    <h1>Perfiles</h1>
+    <hr />
+    <form id="frm">
+        <input type="hidden" value="" name="Id" id="Id" />
+        <div class="form-group">
+            <label for="Nombre" class="form-label">Nombre Perfil:</label>
+            <input name="Nombre" id="Nombre" class="form-control" type="text" />
+        </div>
+        
+        <div class="form-group">
+            <label for="Descripcion" class="form-label">Descripcion:</label>
+            <input name="Descripcion" id="Descripcion" class="form-control" />
+        </div>
+        <input type="button" value="Guardar" onclick="Guardar();" class="btn btn-primary" />
+    </form>
+    <hr />
+    <h4>Lista Perfiles</h4>
+    <br />
+    <table class="table table-bordered table-striped" cellpadding="0" cellspacing="0" id="tabla" style="background-color: white;">
+        <thead>
+            <tr>
+                <td>Nombre</td>
+                <td>Descripción</td>
+                <td>Acciones</td>
+            </tr>
+        </thead>
+        <tbody id="cuerpoTabla">
+            
+        </tbody>
+    </table>
+</body>
+
+<script>
+    var url1 = "/Perfil/Get";
+    var url2 = "/Perfil/Post";
+    var url3 = "/Perfil/Delete";
+    var url4 = "/Perfil/Put";
+
+    let perfiles = [];
+
+    Get();
+    llenarTabla();
+
+
+    function llenarTabla() {
+
+        //let Datos = "<tr><th>Nombre</th><th>Descripcion</th></tr>";
+        fetch(url1).then(function (response) {
+            return response.json();
+        }).then(function (Data) {
+            perfiles = Data;
+
+            const cuerpoTabla = document.getElementById("cuerpoTabla");
+            cuerpoTabla.innerHTML = "";
+
+            for (i = 0; i < Data.length; i++) {
+
+                const perfil = Data[i];
+
+                cuerpoTabla.innerHTML += `
+                    <tr>
+                        <td>${perfil.nombrePerfil}</td>
+                        <td>${perfil.descripcionPerfil}</td>
+                        <td>
+                            <button onclick="prepararEditar(${perfil.codigoPerfil})" class="btn btn-secondary">Editar</button>
+                        </td>
+                    </tr>`
+                ;
+
+            }
+
+        })
+
+    }
+
+    function Guardar() {
+        if (document.getElementById("Id").value != "") {
+            Edit();
+        } else {
+            Post();
+        }
+    }
+
+    function Post() {
+        fetch(url2, {
+            method: "Post",
+            body: JSON.stringify({
+                NombrePerfil: document.getElementById("Nombre").value,
+                DescripcionPerfil: document.getElementById("Descripcion").value
+            }),
+            headers: {
+                'Accept': "application/json",
+                "Content-type": "application/json"
+            }
+        }).then(function (response) {
+            if (response.ok) {
+                return response.text();
+            } else {
+                alert("Error al ejecutar solicitud");
+            }
+        }).then(function (Data) {
+            console.log("entro aqui ultimo");
+            console.log(Data);
+            Get();
+            llenarTabla();
+            document.getElementById("Id").value = "";
+            document.getElementById("Nombre").value = "";
+            document.getElementById("Descripcion").value = "";
+        })
+    }
+
+    function Delete(id) {
+        
+        fetch(url3, {
+            method: "Delete",
+            body: JSON.stringify({
+                CodigoUsuario: id
+            }),
+            headers: {
+                'Accept': "application/json",
+                "Content-type": "application/json"
+            }
+        }).then(function (response) {
+            if (response.ok) {
+                return response.text();
+            } else {
+                alert("Error al ejecutar solicitud");
+            }
+        }).then(function (Data) {
+            console.log("entro aqui ultimo");
+            console.log(Data);
+            Get();
+        })
+    }
+
+    function OpenEdit(codigoPerfil, nombrePerfil, descripcionPerfil) {
+        document.getElementById("Id").value = codigoPerfil;
+        document.getElementById("Nombre").value = nombrePerfil;
+        document.getElementById("Descripcion").value = descripcionPerfil;
+
+    }
+
+    function prepararEditar(perfilId) {
+
+        const perfil = perfiles.find(x => x.codigoPerfil == perfilId);
+
+        if (perfil != undefined) {
+
+            document.getElementById("Id").value = perfil.codigoPerfil;
+            document.getElementById("Nombre").value = perfil.nombrePerfil;
+            document.getElementById("Descripcion").value = perfil.descripcionPerfil;
+        }
+    }
+
+    function Edit() {
+        fetch(url4, {
+            method: "Put",
+            body: JSON.stringify({
+                CodigoPerfil: document.getElementById("Id").value,
+                NombrePerfil: document.getElementById("Nombre").value,
+                DescripcionPerfil: document.getElementById("Descripcion").value
+            }),
+            headers: {
+                'Accept': "application/json",
+                "Content-type": "application/json"
+            }
+        }).then(function (response) {
+            if (response.ok) {
+                return response.text();
+            } else {
+                alert("Error al ejecutar solicitud");
+            }
+        }).then(function (Data) {
+            console.log("entro aqui ultimo");
+            console.log(Data);
+            Get();
+            llenarTabla();
+            document.getElementById("Id").value = "";
+            document.getElementById("Nombre").value = "";
+            document.getElementById("Descripcion").value = "";
+
+        })
+    }
+
+    function Get() {
+        fetch(url1).then(function (response) {
+            return response.json();
+        }).then(function (Data) {
+            document.getElementById("divLista").innerHTML = "";
+            for (i = 0; i < Data.length; i++) {
+                let divElement = document.createElement("div");
+                let divSpan = document.createElement("span");
+                let divButtonDelete = document.createElement("button");
+                let divButtonEdit = document.createElement("button");
+                divSpan.innerHTML = Data[i].nombrePerfil + " " + Data[i].descripcionPerfil;
+                divButtonDelete.innerHTML = "Eliminar";
+                divButtonDelete.MiId = Data[i].codigoPerfil;
+                divButtonDelete.addEventListener("click", function (mibutton) {
+                    Delete(mibutton.target.MiId);
+                });
+                divButtonEdit.innerHTML = "Editar";
+                divButtonEdit.MiId = Data[i].codigoPerfil;
+                divButtonEdit.MiNombre = Data[i].nombrePerfil;
+                divButtonEdit.MiDescripcion = Data[i].descripcionPerfil;
+                divButtonEdit.addEventListener("click", function (mibutton) {
+                    OpenEdit(
+                        mibutton.target.MiId,
+                        mibutton.target.MiNombre,
+                        mibutton.target.MiDescripcion
+                    );
+                });
+                divElement.appendChild(divSpan);
+                divElement.appendChild(divButtonDelete);
+                divElement.appendChild(divButtonEdit);
+                document.getElementById("divLista").appendChild(divElement);
+            }
+
+        })
+    }
+
+</script>

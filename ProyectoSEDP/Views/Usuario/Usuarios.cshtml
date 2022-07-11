@@ -1,0 +1,271 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<body>
+    <h1>Usuarios</h1>
+    <hr />
+    <form id="frm">
+        <input type="hidden" value="" name="Id" id="Id" />
+        <div class="form-group">
+            <label for="Nombre" class="form-label">Nombre: </label>
+            <input name="Nombre" id="Nombre" class="form-control" type="text" />
+        </div>
+        <div class="form-group">
+            <label for="Correo" class="form-label">Correo: </label>
+            <input name="Correo" id="Correo" class="form-control" type="text" />
+        </div>
+        <div class="form-group">
+            <label for="Contrasenna" class="form-label">Contraseña: </label>
+            <input name="Contrasenna" id="Contrasenna" class="form-control" type="text" />
+        </div>
+        <label for="Rol">Roles: </label>
+        <select for="Rol" class="form-control" id="Roles">
+        </select>
+        <br />
+        <div class="form-group">
+            <label for="Foto" class="form-label">Foto: </label>
+            <input name="Foto" id="Foto" class="form-control" type="text" />
+        </div>
+        <input type="button" value="Guardar" onclick="Guardar();" class="btn btn-primary" />
+    </form>
+    <hr />
+    <h4>Lista Usuarios</h4>
+    <br />
+    <table class="table table-bordered table-striped" cellpadding="0" cellspacing="0" id="tabla" style="background-color: white;">
+        <thead>
+            <tr>
+                <td>Nombre</td>
+                <td>Correo</td>
+                <td>Contraseña</td>
+                <td>Foto</td>
+                <td>Acciones</td>
+            </tr>
+        </thead>
+        <tbody id="cuerpoTabla">
+        </tbody>
+    </table>
+</body>
+<script>
+    var url1 = "/Usuario/Get";
+    var url2 = "/Usuario/Post";
+    var url3 = "/Usuario/Delete";
+    var url4 = "/Usuario/Put";
+
+    var urlRol = "/Rol/Get";
+
+    let usuarios = [];
+
+    Get();
+    cargarBarraRoles();
+    llenarTabla();
+
+    function llenarTabla() {
+        //let Datos = "<tr><th>Nombre</th><th>Correo</th> </tr>";
+        fetch(url1).then(function (response) {
+            return response.json();
+        }).then(function (Data) {
+            usuarios = Data;
+
+            const cuerpoTabla = document.getElementById("cuerpoTabla");
+            cuerpoTabla.innerHTML = "";
+
+            for (i = 0; i < Data.length; i++) {
+
+                const usuario = Data[i];
+
+                cuerpoTabla.innerHTML += `
+                    <tr>
+                        <td>${usuario.nombreUsuario}</td>
+                        <td>${usuario.correoUsuario}</td>
+                        <td>${usuario.contrasennaUsuario}</td>
+                        <td>${usuario.fotoUsuario}</td>
+                        <td>
+                            <button onclick="prepararEditar(${usuario.codigoUsuario})" class="btn btn-secondary">Editar</button>
+                        </td>
+                    </tr>`
+                    ;
+
+               
+            }
+
+        })
+
+    }
+
+    function cargarBarraRoles() {
+        fetch(urlRol).then(function (response) {
+            return response.json();
+        }).then(function (Data) {
+            document.getElementById("Roles").innerHTML = "";
+            for (i = 0; i < Data.length; i++) {
+                let Option = document.createElement("Option");
+                Option.innerHTML = "Codigo de Rol:" + " " + Data[i].codigoRol + "/ " + "Nombre de Rol:" + " " + Data[i].nombreRol + "/ " +
+                    "Descripcion de Rol:" + " " + Data[i].descripcionRol;
+                document.getElementById("Roles").appendChild(Option);
+            }
+
+        })
+    }
+
+    function Guardar() {
+        if (document.getElementById("Id").value != "") {
+            Edit();
+        } else {
+            Post();
+        }
+    }
+
+    function Post() {
+        fetch(url2, {
+            method: "Post",
+            body: JSON.stringify({
+                NombreUsuario: document.getElementById("Nombre").value,
+                CorreoUsuario: document.getElementById("Correo").value,
+                ContrasennaUsuario: document.getElementById("Contrasenna").value,
+                FotoUsuario: document.getElementById("Foto").value
+            }),
+            headers: {
+                'Accept': "application/json",
+                "Content-type": "application/json"
+            }
+        }).then(function (response) {
+            if (response.ok) {
+                return response.text();
+            } else {
+                alert("Error al ejecutar solicitud");
+            }
+        }).then(function (Data) {
+            console.log("entro aqui ultimo");
+            console.log(Data);
+            Get();
+            llenarTabla();
+            document.getElementById("Id").value = "";
+            document.getElementById("Id").value = "";
+            document.getElementById("Nombre").value = "";
+            document.getElementById("Correo").value = "";
+            document.getElementById("Contrasenna").value = "";
+            document.getElementById("Foto").value = "";
+        })
+    }
+
+    function Delete(id) {
+        fetch(url3, {
+            method: "Delete",
+            body: JSON.stringify({
+                CodigoUsuario: id
+            }),
+            headers: {
+                'Accept': "application/json",
+                "Content-type": "application/json"
+            }
+        }).then(function (response) {
+            if (response.ok) {
+                return response.text();
+            } else {
+                alert("Error al ejecutar solicitud");
+            }
+        }).then(function (Data) {
+            console.log("entro aqui ultimo");
+            console.log(Data);
+            Get();
+        })
+    }
+
+    function OpenEdit(codigoUsuario, nombreUsuario, correoUsuario, contrasennaUsuario, fotoUsuario) {
+        document.getElementById("Id").value = codigoUsuario;
+        document.getElementById("Nombre").value = nombreUsuario;
+        document.getElementById("Correo").value = correoUsuario;
+        document.getElementById("Contrasenna").value = contrasennaUsuario;
+        document.getElementById("Foto").value = fotoUsuario;
+
+    }
+
+    function prepararEditar(usuarioId) {
+        const usuario = usuarios.find(x => x.codigoUsuario == usuarioId);
+
+        if (usuario != undefined) {
+            document.getElementById("Id").value = usuario.codigoUsuario;
+            document.getElementById("Nombre").value = usuario.nombreUsuario;
+            document.getElementById("Correo").value = usuario.correoUsuario;
+            document.getElementById("Contrasenna").value = usuario.contrasennaUsuario;
+            document.getElementById("Foto").value = usuario.fotoUsuario;
+        }
+    }
+
+    function Edit() {
+        fetch(url4, {
+            method: "Put",
+            body: JSON.stringify({
+                CodigoUsuario: document.getElementById("Id").value,
+                NombreUsuario: document.getElementById("Nombre").value,
+                CorreoUsuario: document.getElementById("Correo").value,
+                ContrasennaUsuario: document.getElementById("Contrasenna").value,
+                FotoUsuario: document.getElementById("Foto").value
+            }),
+            headers: {
+                'Accept': "application/json",
+                "Content-type": "application/json"
+            }
+        }).then(function (response) {
+            if (response.ok) {
+                return response.text();
+            } else {
+                alert("Error al ejecutar solicitud");
+            }
+        }).then(function (Data) {
+            console.log("entro aqui ultimo");
+            console.log(Data);
+            Get();
+            llenarTabla();
+            document.getElementById("Id").value = "";
+            document.getElementById("Id").value = "";
+            document.getElementById("Nombre").value = "";
+            document.getElementById("Correo").value = "";
+            document.getElementById("Contrasenna").value = "";
+            document.getElementById("Foto").value = "";
+
+        })
+    }
+
+    function Get() {
+        fetch(url1).then(function (response) {
+            return response.json();
+        }).then(function (Data) {
+            document.getElementById("divLista").innerHTML = "";
+            for (i = 0; i < Data.length; i++) {
+                let divElement = document.createElement("div");
+                let divSpan = document.createElement("span");
+                let divButtonDelete = document.createElement("button");
+                let divButtonEdit = document.createElement("button");
+                divSpan.innerHTML = Data[i].nombreUsuario + " " + Data[i].correoUsuario;
+                divButtonDelete.innerHTML = "Eliminar";
+                divButtonDelete.MiId = Data[i].codigoUsuario;
+                divButtonDelete.addEventListener("click", function (mibutton) {
+                    Delete(mibutton.target.MiId);
+                });
+                divButtonEdit.innerHTML = "Editar";
+                divButtonEdit.MiId = Data[i].codigoUsuario;
+                divButtonEdit.MiNombre = Data[i].nombreUsuario;
+                divButtonEdit.MiCorreo = Data[i].correoUsuario;
+                divButtonEdit.MiContrasenna = Data[i].contrasennaUsuario;
+                divButtonEdit.MiFoto = Data[i].fotoUsuario;
+                divButtonEdit.addEventListener("click", function (mibutton) {
+                    OpenEdit(
+                        mibutton.target.MiId,
+                        mibutton.target.MiNombre,
+                        mibutton.target.MiCorreo,
+                        mibutton.target.MiContrasenna,
+                        mibutton.target.MiFoto
+                    );
+                });
+                divElement.appendChild(divSpan);
+                divElement.appendChild(divButtonDelete);
+                divElement.appendChild(divButtonEdit);
+                document.getElementById("divLista").appendChild(divElement);
+            }
+
+        })
+    }
+
+</script>

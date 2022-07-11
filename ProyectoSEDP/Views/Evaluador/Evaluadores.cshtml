@@ -1,0 +1,62 @@
+﻿
+<body>
+    <h1>Evaluadores</h1>
+    <hr />
+    <form id="frm">
+        <input type="hidden" value="" name="Id" id="Id" />
+        <div class="form-group">
+            <label for="Nombre"class="form-label">Nombre Evaluador: </label>
+            <input name="Nombre" id="Nombre" class="form-control" type="text"/>
+        </div>
+        <div class="form-group">
+            <label for="Departamento" class="form-label">Departamentos: </label>
+            <select for="Departamento" class="form-control" id="Departamento">
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="Perfil" class="form-label">Perfil: </label>
+            <select for="Perfil" class="form-control" id="Perfil">
+            </select>
+        </div>
+        <input type="button" value="Guardar" onclick="Guardar();" class="btn btn-primary" />
+    </form>
+    <hr />
+    <div id="divLista"></div>
+</body>
+<script>
+
+    var urlDepartamento = "/Departamento/Get";
+    var urlPerfil = "/Perfil/Get";
+
+    cargarBarraDepartamento();
+    cargarBarraPerfil();
+
+    function cargarBarraDepartamento() {
+        fetch(urlDepartamento).then(function (response) {
+            return response.json();
+        }).then(function (Data) {
+            document.getElementById("Departamento").innerHTML = "";
+            for (i = 0; i < Data.length; i++) {
+                let Option = document.createElement("Option");
+                Option.innerHTML = "Nombre de Departamento:" + " " + Data[i].nombreDepartamento + "/ " + "Descripcion de Departamento:" + " " + Data[i].descripcionDepartamento;
+                document.getElementById("Departamento").appendChild(Option);
+            }
+
+        })
+    }
+
+    function cargarBarraPerfil() {
+        fetch(urlPerfil).then(function (response) {
+            return response.json();
+        }).then(function (Data) {
+            document.getElementById("Perfil").innerHTML = "";
+            for (i = 0; i < Data.length; i++) {
+                let Option = document.createElement("Option");
+                Option.innerHTML = "Nombre de Perfil:" + " " + Data[i].nombrePerfil + "/ " + "Descripcion de Perfil:" + " " + Data[i].descripcionPerfil;
+                document.getElementById("Perfil").appendChild(Option);
+            }
+
+        })
+    }
+
+</script>

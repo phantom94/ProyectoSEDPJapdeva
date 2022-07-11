@@ -1,0 +1,94 @@
+﻿
+@{
+    Layout = "";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body style="background-color: #e6f4ff;">
+    <header class="sticky-top">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-controller="Evaluacion" asp-action="Evaluaciones">Atras</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            <h1>Pendientes</h1>
+            <hr />
+            <form id="frm">
+                <input type="hidden" value="" name="Id" id="Id" />
+                <div class="form-group">
+                    <label for="Perfil" class="form-label">Empleado: </label>
+                    <select for="Perfil" class="form-control" id="Perfil">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="Perfil" class="form-label">Departamento: </label>
+                    <select for="Perfil" class="form-control" id="Perfil">
+                    </select>
+                </div>
+                <input type="button" value="Buscar" onclick="Guardar();" class="btn btn-primary" />
+            </form>
+            <hr />
+            <div id="divLista"></div>
+            <hr />
+            <h4>Lista Pendientes</h4>
+            <br />
+            <table class="table table-bordered table-striped" cellpadding="0" cellspacing="0" id="tabla" style="background-color: white;">
+                <thead>
+                    <tr>
+                        <td>Empleado</td>
+                        <td>Evaluacion</td>
+                        <td>Estado</td>
+                        <td>Aceptar</td>
+                        <td>Rechazar</td>
+                        <td>Ver</td>
+                    </tr>
+                </thead>
+                <tbody id="cuerpoTabla">
+                </tbody>
+            </table>
+        </main>
+    </div>
+    
+</body>
+</html>
+<script>
+    llenarTabla();
+
+    function llenarTabla() {
+
+        const cuerpoTabla = document.getElementById("cuerpoTabla");
+        cuerpoTabla.innerHTML = "";
+
+        cuerpoTabla.innerHTML += `
+                    <tr>
+                        <td>${"Juan Gabriel"}</td>
+                        <td>Desempeño</td>
+                        <td>Apelacion</td>
+                        <td>
+                            <button onclick="" class="btn btn-secondary">Aceptar</button>
+                        </td>
+                        <td>
+                        <button onclick="" class="btn btn-secondary">Rechazar</button>
+                        </td>
+                             
+                        <td>
+                        <button onclick="" class="btn btn-secondary">Ver</button>
+                        </td>
+                            
+                    </tr>`
+            ;
+    }
+</script>

@@ -1,0 +1,114 @@
+﻿@{
+    Layout = "";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body style="background-color: #e6f4ff;">
+
+    <header class="sticky-top">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-controller="Menu" asp-action="Principal">Atras</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            <h1>Planificacion</h1>
+            <hr />
+            <form id="frm">
+                <input type="hidden" value="" name="Id" id="Id" />
+                <div class="form-group">
+                    <label for="Descripcion" class="form-label">Descripcion Planificacion: </label>
+                    <input name="Descripcion" id="Descripcion" class="form-control" type="text" />
+                </div>
+                <div class="form-group">
+                    <label for="Perfil" class="form-label">Perfil: </label>
+                    <select for="Perfil" class="form-control" id="Perfil">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="Fecha Inicio" class="form-label">Fecha Inicio: </label>
+                    <input type="date" class="form-control" id="fechaInicio" />
+                </div>
+                <div class="form-group">
+                    <label for="Fecha Fin" class="form-label">Fecha Fin: </label>
+                    <input type="date" class="form-control" id="fechaFin" />
+                </div>
+                <input type="button" value="Guardar" onclick="Guardar();" class="btn btn-primary" />
+            </form>
+            <hr />
+            <div id="divLista"></div>
+            <hr />
+            <h4>Lista Planificacion</h4>
+            <br />
+            <table class="table table-bordered table-striped" cellpadding="0" cellspacing="0" id="tabla" style="background-color: white;">
+                <thead>
+                    <tr>
+                        <td>Descripcion</td>
+                        <td>Perfil</td>
+                        <td>Fecha Inicio</td>
+                        <td>Fecha Fin</td>
+                        <td>Acciones</td>
+                    </tr>
+                </thead>
+                <tbody id="cuerpoTabla">
+                </tbody>
+            </table>
+        </main>
+    </div>
+
+</body>
+</html>
+<script>
+
+    var urlPerfil = "/Perfil/Get";
+
+    llenarTabla();
+
+    cargarBarraPerfil();
+
+    function cargarBarraPerfil() {
+        fetch(urlPerfil).then(function (response) {
+            return response.json();
+        }).then(function (Data) {
+            document.getElementById("Perfil").innerHTML = "";
+            for (i = 0; i < Data.length; i++) {
+                let Option = document.createElement("Option");
+                Option.innerHTML = "Nombre de Perfil:" + " " + Data[i].nombrePerfil + "/ " + "Descripcion de Perfil:" + " " + Data[i].descripcionPerfil;
+                document.getElementById("Perfil").appendChild(Option);
+            }
+
+        })
+    }
+
+    function llenarTabla() {
+
+        const cuerpoTabla = document.getElementById("cuerpoTabla");
+        cuerpoTabla.innerHTML = "";
+
+        cuerpoTabla.innerHTML += `
+                    <tr>
+                        <td>Para area administrativa</td>
+                        <td>admin1</td>
+                        <td>12/05/2022</td>
+                        <td>12/05/2022</td>
+                        <td>
+                            <button onclick="" class="btn btn-secondary">Editar</button>
+                        </td>
+                    </tr>`
+            ;
+    }
+
+
+</script>

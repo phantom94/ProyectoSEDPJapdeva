@@ -1,0 +1,102 @@
+﻿@{
+    Layout = "";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+</head>
+<body style="background-color: #e6f4ff;">
+
+           
+    <div class="row">
+        <div class="col-2">
+            <nav class="navbar navbar-dark bg-primary navbar-vertical-left">
+                <ul class="nav navbar-nav navbar-vertical-left">
+
+                    <li class="nav-item">
+                        <a class="navbar-brand" asp-area="" asp-controller="Evaluacion" asp-action="Evaluaciones">Atras</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="navbar-brand" asp-area="" asp-controller="Evaluacion" asp-action="Evaluaciones">Atras</a>
+                    </li>
+
+                </ul>
+            </nav>
+            </div>
+        </div>
+
+            <div class="container">
+                <h1>Evaluacion</h1>
+                <hr />
+                <form id="frm">
+                    <input type="hidden" value="" name="Id" id="Id" />
+                    <div class="form-group">
+                        <label for="Descripcion" class="form-label">Empleado: </label>
+                        <input name="Descripcion" id="Descripcion" class="form-control" type="text" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Perfil" class="form-label">Cuestionario: </label>
+                        <select for="Perfil" class="form-control" id="Perfil">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="Fecha Fin" class="form-label">Fecha Realizacion: </label>
+                        <input type="date" class="form-control" id="fechaFin" />
+                    </div>
+                    <input type="button" value="Realizar" onclick="Guardar();" class="btn btn-primary" />
+                </form>
+            </div>
+
+
+
+</body>
+</html>
+<script>
+
+   // <header class="sticky-top">
+
+    //<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary border-bottom box-shadow mb-3">
+    //<nav class="navbar flex-column">
+      //  <div class="container">
+        //    <a class="navbar-brand" asp-area="" asp-controller="Evaluacion" asp-action="Evaluaciones">Atras</a>
+          //  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+            //    aria-expanded="false" aria-label="Toggle navigation">
+              //  <span class="navbar-toggler-icon"></span>
+            //</button>
+        //</div>
+    //</nav>
+    //</header >
+
+    /*<main role="main" class="pb-3">
+        <h1>Evaluacion</h1>
+        <hr />
+        <form id="frm">
+            <input type="hidden" value="" name="Id" id="Id" />
+            <div class="form-group">
+                <label for="Descripcion" class="form-label">Empleado: </label>
+                <input name="Descripcion" id="Descripcion" class="form-control" type="text" />
+            </div>
+            <div class="form-group">
+                <label for="Perfil" class="form-label">Cuestionario: </label>
+                <select for="Perfil" class="form-control" id="Perfil">
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Fecha Fin" class="form-label">Fecha Realizacion: </label>
+                <input type="date" class="form-control" id="fechaFin" />
+            </div>
+            <input type="button" value="Realizar" onclick="Guardar();" class="btn btn-primary" />
+        </form>
+
+    </main> +/
+</script>

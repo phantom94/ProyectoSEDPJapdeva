@@ -1,0 +1,220 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<body>
+    <h1>Competencias</h1>
+    <hr />
+    <form id="frm">
+        <input type="hidden" value="" name="Id" id="Id" />
+        <div class="form-group">
+            <label for="Nombre">Nombre Competencia: </label>
+            <input name="Nombre" id="Nombre" class="form-control" type="text" />
+        </div>
+        <div class="form-group">
+            <label for="Descripcion">Descripcion Competencia: </label>
+            <input name="Descripcion" id="Descripcion" class="form-control" type="text" />
+        </div>
+        <input type="button" value="Guardar" onclick="Guardar();" class="btn btn-primary" />
+    </form>
+    <hr />
+    <div id="divLista"></div>
+    <hr />
+    <h4>Lista Competencias</h4>
+    <br />
+    <table class="table table-bordered table-striped" cellpadding="0" cellspacing="0" id="tabla" style="background-color: white;">
+        <thead>
+            <tr>
+                <td>Nombre</td>
+                <td>Descripción</td>
+                <td>Acciones</td>
+            </tr>
+        </thead>
+        <tbody id="cuerpoTabla">
+        </tbody>
+    </table>
+</body>
+
+<script>
+    var url1 = "/Competencia/Get";
+    var url2 = "/Competencia/Post";
+    var url3 = "/Competencia/Delete";
+    var url4 = "/Competencia/Put";
+
+    let competencias = [];
+
+    Get();
+    llenarTabla();
+
+    function llenarTabla() {
+        fetch(url1).then(function (response) {
+            return response.json();
+        }).then(function (Data) {
+
+            competencias = Data;
+
+            const cuerpoTabla = document.getElementById("cuerpoTabla");
+            cuerpoTabla.innerHTML = "";
+
+            for (i = 0; i < Data.length; i++) {
+
+                const competencia = Data[i];
+
+                cuerpoTabla.innerHTML += `
+                    <tr>
+                        <td>${competencia.nombreCompetencia}</td>
+                        <td>${competencia.descripcionCompetencia}</td>
+                        <td>
+                            <button onclick="prepararEditar(${competencia.codigoCompetencia})" class="btn btn-secondary">Editar</button>
+                        </td>
+                    </tr>`
+                    ;
+            }
+
+        })
+    }
+
+    function Guardar() {
+        if (document.getElementById("Id").value != "") {
+            Edit();
+        } else {
+            Post();
+        }
+    }
+
+    function Post() {
+        fetch(url2, {
+            method: "Post",
+            body: JSON.stringify({
+                NombreCompetencia: document.getElementById("Nombre").value,
+                DescripcionCompetencia: document.getElementById("Descripcion").value
+            }),
+            headers: {
+                'Accept': "application/json",
+                "Content-type": "application/json"
+            }
+        }).then(function (response) {
+            if (response.ok) {
+                return response.text();
+            } else {
+                alert("Error al ejecutar solicitud");
+            }
+        }).then(function (Data) {
+            console.log("entro aqui ultimo");
+            console.log(Data);
+            Get();
+            llenarTabla();
+            document.getElementById("Id").value = "";
+            document.getElementById("Nombre").value = "";
+            document.getElementById("Descripcion").value = "";
+        })
+    }
+
+    function Delete(id) {
+        fetch(url3, {
+            method: "Delete",
+            body: JSON.stringify({
+                CodigoUsuario: id
+            }),
+            headers: {
+                'Accept': "application/json",
+                "Content-type": "application/json"
+            }
+        }).then(function (response) {
+            if (response.ok) {
+                return response.text();
+            } else {
+                alert("Error al ejecutar solicitud");
+            }
+        }).then(function (Data) {
+            console.log("entro aqui ultimo");
+            console.log(Data);
+            Get();
+        })
+    }
+
+    function OpenEdit(codigoCompetencia, nombreCompetencia, descripcionCompetencia) {
+        document.getElementById("Id").value = codigoCompetencia;
+        document.getElementById("Nombre").value = nombreCompetencia;
+        document.getElementById("Descripcion").value = descripcionCompetencia;
+
+    }
+
+    function prepararEditar(competenciaId) {
+
+        const competencia = competencias.find(x => x.codigoCompetencia == competenciaId);
+
+        if (competencia != undefined) {
+
+            document.getElementById("Id").value = competencia.codigoCompetencia;
+            document.getElementById("Nombre").value = competencia.nombreCompetencia;
+            document.getElementById("Descripcion").value = competencia.descripcionCompetencia;
+        }
+    }
+
+    function Edit() {
+        fetch(url4, {
+            method: "Put",
+            body: JSON.stringify({
+                CodigoCompetencia: document.getElementById("Id").value,
+                NombreCompetencia: document.getElementById("Nombre").value,
+                DescripcionCompetencia: document.getElementById("Descripcion").value,
+            }),
+            headers: {
+                'Accept': "application/json",
+                "Content-type": "application/json"
+            }
+        }).then(function (response) {
+            if (response.ok) {
+                return response.text();
+            } else {
+                alert("Error al ejecutar solicitud");
+            }
+        }).then(function (Data) {
+            console.log("entro aqui ultimo");
+            console.log(Data);
+            Get();
+            llenarTabla();
+            document.getElementById("Id").value = "";
+            document.getElementById("Nombre").value = "";
+            document.getElementById("Descripcion").value = "";
+        })
+    }
+
+    function Get() {
+        fetch(url1).then(function (response) {
+            return response.json();
+        }).then(function (Data) {
+            document.getElementById("divLista").innerHTML = "";
+            for (i = 0; i < Data.length; i++) {
+                let divElement = document.createElement("div");
+                let divSpan = document.createElement("span");
+                let divButtonDelete = document.createElement("button");
+                let divButtonEdit = document.createElement("button");
+                divSpan.innerHTML = Data[i].nombreCompetencia + " " + Data[i].descripcionCompetencia;
+                divButtonDelete.innerHTML = "Eliminar";
+                divButtonDelete.MiId = Data[i].codigoCompetencia;
+                divButtonDelete.addEventListener("click", function (mibutton) {
+                    Delete(mibutton.target.MiId);
+                });
+                divButtonEdit.innerHTML = "Editar";
+                divButtonEdit.MiId = Data[i].codigoCompetencia;
+                divButtonEdit.MiNombre = Data[i].nombreCompetencia;
+                divButtonEdit.MiDescripcion = Data[i].descripcionCompetencia;
+                divButtonEdit.addEventListener("click", function (mibutton) {
+                    OpenEdit(
+                        mibutton.target.MiId,
+                        mibutton.target.MiNombre,
+                        mibutton.target.MiDescripcion
+                    );
+                });
+                divElement.appendChild(divSpan);
+                divElement.appendChild(divButtonDelete);
+                divElement.appendChild(divButtonEdit);
+                document.getElementById("divLista").appendChild(divElement);
+            }
+
+        })
+    }
+
+</script> 

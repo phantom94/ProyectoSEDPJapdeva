@@ -1,0 +1,68 @@
+﻿
+@{
+    Layout = "";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body style="background-color: #e6f4ff;">
+    <div style="max-width:50%; margin:auto;">
+        <h1 style="text-align: center">Login</h1>
+        <hr />
+        <form id="frm">
+            <input type="hidden" value="" name="Id" id="Id" />
+            <div class="form-group">
+                <label for="Correo" class="form-label">Correo:</label>
+                <input name="Correo" id="Correo" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="Contrasenna" class="form-label">Contraseña: </label>
+                <input name="Contrasenna" id="Contrasenna" class="form-control" />
+            </div>
+            <input type="button" value="Ingresar" onclick="Ingresar();" class="btn btn-primary" />
+        </form>
+        <br />
+        <label class="form-label" style="color:blue">Olvide Contraseña</label>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+</body>
+</html>
+<script>
+    var url1 = "/Usuario/Logeo";
+
+    function Ingresar() {
+        fetch(url1, {
+            method: "Logeo",
+            body: JSON.stringify({
+                CorreoUsuario: document.getElementById("Correo").value,
+                ContrasennaUsuario: document.getElementById("Contrasenna").value,
+            }),
+            headers: {
+                'Accept': "application/json",
+                "Content-type": "application/json"
+            }
+        }).then(function (response) {
+            if (response.ok) {
+                return response.text();
+            } else {
+                alert("Error al ejecutar solicitud");
+            }
+        }).then(function (Data) {
+            console.log(Data);
+            /*window.location.href = '/home/index';*/
+            window.location.href = '/Menu/Principal';
+            document.getElementById("Correo").value = "";
+            document.getElementById("Contrasenna").value = "";
+
+        })
+    }
+</script>

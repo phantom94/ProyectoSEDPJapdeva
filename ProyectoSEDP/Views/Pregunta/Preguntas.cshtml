@@ -1,0 +1,230 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<body>
+    <h1>Preguntas</h1>
+    <hr />
+    <form id="frm">
+        <input type="hidden" value="" name="Id" id="Id" />
+        <div class="form-group">
+            <label for="Competencia" class="form-label">Competencias: </label>
+            <select for="Competencia" class="form-control" id="Competencias">
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="Descripcion" class="form-label">Descripcion Pregunta: </label>
+            <input name="Descripcion" id="Descripcion" class="form-control" type="text" />
+        </div>
+        <input type="button" value="Guardar" onclick="Guardar();" class="btn btn-primary" />
+    </form>
+    <hr />
+    <div id="divLista"></div>
+    <hr />
+    <h4>Lista Preguntas</h4>
+    <br />
+    <table class="table table-bordered table-striped" cellpadding="0" cellspacing="0" id="tabla" style="background-color: white;">
+        <thead>
+            <tr>
+                <td>Descripción</td>
+                <td>Acciones</td>
+            </tr>
+        </thead>
+        <tbody id="cuerpoTabla">
+        </tbody>
+    </table>
+</body>
+<script>
+    var url1 = "/Pregunta/Get";
+    var url2 = "/Pregunta/Post";
+    var url3 = "/Pregunta/Delete";
+    var url4 = "/Pregunta/Put";
+
+    var urlCompetencia = "/Competencia/Get";
+
+    let preguntas = [];
+
+    Get();
+    cargarBarraCompetencias();
+    llenarTabla();
+
+    function llenarTabla() {
+
+        fetch(url1).then(function (response) {
+            return response.json();
+        }).then(function (Data) {
+
+            preguntas = Data;
+
+            const cuerpoTabla = document.getElementById("cuerpoTabla");
+            cuerpoTabla.innerHTML = "";
+
+            for (i = 0; i < Data.length; i++) {
+
+                const pregunta = Data[i];
+
+                cuerpoTabla.innerHTML += `
+                    <tr>
+                        <td>${pregunta.descripcionPregunta}</td>
+                        <td>
+                            <button onclick="prepararEditar(${pregunta.codigoPregunta})" class="btn btn-secondary">Editar</button>
+                        </td>
+                    </tr>`
+                    ;
+            }
+        })
+    }
+
+
+    function cargarBarraCompetencias() {
+        fetch(urlCompetencia).then(function (response) {
+            return response.json();
+        }).then(function (Data) {
+            document.getElementById("Competencias").innerHTML = "";
+            for (i = 0; i < Data.length; i++) {
+                let Option = document.createElement("Option");
+                Option.innerHTML = "Codigo de Competencia:" + " " + Data[i].codigoCompetencia + "/ " + "Nombre de Competencia:" + " " + Data[i].nombreCompetencia + "/ " +
+                    "Descripcion de Competencia:" + " " + Data[i].descripcionCompetencia;
+                document.getElementById("Competencias").appendChild(Option);
+            }
+
+        })
+    }
+
+    function Guardar() {
+        if (document.getElementById("Id").value != "") {
+            Edit();
+        } else {
+            Post();
+        }
+    }
+
+    function Post() {
+        fetch(url2, {
+            method: "Post",
+            body: JSON.stringify({
+                DescripcionPregunta: document.getElementById("Descripcion").value
+            }),
+            headers: {
+                'Accept': "application/json",
+                "Content-type": "application/json"
+            }
+        }).then(function (response) {
+            if (response.ok) {
+                return response.text();
+            } else {
+                alert("Error al ejecutar solicitud");
+            }
+        }).then(function (Data) {
+            console.log("entro aqui ultimo");
+            console.log(Data);
+            Get();
+            llenarTabla();
+            document.getElementById("Id").value = "";
+            document.getElementById("Descripcion").value = "";
+        })
+    }
+
+    function Delete(id) {
+        fetch(url3, {
+            method: "Delete",
+            body: JSON.stringify({
+                CodigoUsuario: id
+            }),
+            headers: {
+                'Accept': "application/json",
+                "Content-type": "application/json"
+            }
+        }).then(function (response) {
+            if (response.ok) {
+                return response.text();
+            } else {
+                alert("Error al ejecutar solicitud");
+            }
+        }).then(function (Data) {
+            console.log("entro aqui ultimo");
+            console.log(Data);
+            Get();
+        })
+    }
+
+    function OpenEdit(codigoPregunta, descripcionPregunta) {
+        document.getElementById("Id").value = codigoPregunta;
+        document.getElementById("Descripcion").value = descripcionPregunta;
+
+    }
+
+    function prepararEditar(preguntaId) {
+
+        const pregunta = preguntas.find(x => x.codigoPregunta == preguntaId);
+
+        if (pregunta != undefined) {
+
+            document.getElementById("Id").value = pregunta.codigoPregunta;
+            document.getElementById("Descripcion").value = pregunta.descripcionPregunta;
+        }
+    }
+
+    function Edit() {
+        fetch(url4, {
+            method: "Put",
+            body: JSON.stringify({
+                CodigoPregunta: document.getElementById("Id").value,
+                DescripcionPregunta: document.getElementById("Descripcion").value
+            }),
+            headers: {
+                'Accept': "application/json",
+                "Content-type": "application/json"
+            }
+        }).then(function (response) {
+            if (response.ok) {
+                return response.text();
+            } else {
+                alert("Error al ejecutar solicitud");
+            }
+        }).then(function (Data) {
+            console.log("entro aqui ultimo");
+            console.log(Data);
+            Get();
+            llenarTabla();
+            document.getElementById("Id").value = "";
+            document.getElementById("Descripcion").value = "";
+
+        })
+    }
+
+    function Get() {
+        fetch(url1).then(function (response) {
+            return response.json();
+        }).then(function (Data) {
+            document.getElementById("divLista").innerHTML = "";
+            for (i = 0; i < Data.length; i++) {
+                let divElement = document.createElement("div");
+                let divSpan = document.createElement("span");
+                let divButtonDelete = document.createElement("button");
+                let divButtonEdit = document.createElement("button");
+                divSpan.innerHTML = Data[i].descripcionPregunta;
+                divButtonDelete.innerHTML = "Eliminar";
+                divButtonDelete.MiId = Data[i].codigoPregunta;
+                divButtonDelete.addEventListener("click", function (mibutton) {
+                    Delete(mibutton.target.MiId);
+                });
+                divButtonEdit.innerHTML = "Editar";
+                divButtonEdit.MiId = Data[i].codigoPregunta;
+                divButtonEdit.MiDescripcion = Data[i].descripcionPregunta;
+                divButtonEdit.addEventListener("click", function (mibutton) {
+                    OpenEdit(
+                        mibutton.target.MiId,
+                        mibutton.target.MiDescripcion,
+                    );
+                });
+                divElement.appendChild(divSpan);
+                divElement.appendChild(divButtonDelete);
+                divElement.appendChild(divButtonEdit);
+                document.getElementById("divLista").appendChild(divElement);
+            }
+
+        })
+    }
+
+</script>

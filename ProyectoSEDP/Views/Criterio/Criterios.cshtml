@@ -1,0 +1,222 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<body>
+    <h1>Criterios</h1>
+    <hr />
+    <form id="frm">
+        <input type="hidden" value="" name="Id" id="Id" />
+        <div class="form-group">
+            <label for="Descripcion" class="form-label">Descripcion Criterio: </label>
+            <input name="Descripcion" id="Descripcion" class="form-control" type="text" />
+        </div>
+        <div class="form-group">
+            <label for="Peso" class="form-label">Peso Criterio: </label>
+            <input name="Peso" id="Peso" class="form-control" type="text" />
+        </div>
+        <input type="button" value="Guardar" onclick="Guardar();" class="btn btn-primary" />
+    </form>
+    <hr />
+    <div id="divLista"></div>
+    <hr />
+    <h4>Lista Criterios</h4>
+    <br />
+    <table class="table table-bordered table-striped" cellpadding="0" cellspacing="0" id="tabla" style="background-color: white;">
+        <thead>
+            <tr>
+                <td>Descripción</td>
+                <td>Peso</td>
+                <td>Acciones</td>
+            </tr>
+        </thead>
+        <tbody id="cuerpoTabla">
+        </tbody>
+    </table>
+</body>
+
+<script>
+    var url1 = "/Criterio/Get";
+    var url2 = "/Criterio/Post";
+    var url3 = "/Criterio/Delete";
+    var url4 = "/Criterio/Put";
+
+    let criterios = [];
+
+    Get();
+    llenarTabla();
+
+    function llenarTabla() {
+
+        fetch(url1).then(function (response) {
+            return response.json();
+        }).then(function (Data) {
+
+            criterios = Data;
+
+            const cuerpoTabla = document.getElementById("cuerpoTabla");
+            cuerpoTabla.innerHTML = "";
+
+            for (i = 0; i < Data.length; i++) {
+
+                const criterio = Data[i];
+
+                cuerpoTabla.innerHTML += `
+                    <tr>
+                        <td>${criterio.descripcionCriterio}</td>
+                        <td>${criterio.pesoCriterio}</td>
+                        <td>
+                            <button onclick="prepararEditar(${criterio.codigoCriterio})" class="btn btn-secondary">Editar</button>
+                        </td>
+                    </tr>`
+                    ;
+            }
+        })
+    }
+
+
+    function Guardar() {
+        if (document.getElementById("Id").value != "") {
+            Edit();
+        } else {
+            Post();
+        }
+    }
+
+    function Post() {
+        fetch(url2, {
+            method: "Post",
+            body: JSON.stringify({
+                DescripcionCriterio: document.getElementById("Descripcion").value,
+                PesoCriterio: document.getElementById("Peso").value
+            }),
+            headers: {
+                'Accept': "application/json",
+                "Content-type": "application/json"
+            }
+        }).then(function (response) {
+            if (response.ok) {
+                return response.text();
+            } else {
+                alert("Error al ejecutar solicitud");
+            }
+        }).then(function (Data) {
+            console.log("entro aqui ultimo");
+            console.log(Data);
+            Get();
+            llenarTabla();
+            document.getElementById("Id").value = "";
+            document.getElementById("Descripcion").value = "";
+            document.getElementById("Peso").value = "";
+        })
+    }
+
+    function Delete(id) {
+        fetch(url3, {
+            method: "Delete",
+            body: JSON.stringify({
+                CodigoUsuario: id
+            }),
+            headers: {
+                'Accept': "application/json",
+                "Content-type": "application/json"
+            }
+        }).then(function (response) {
+            if (response.ok) {
+                return response.text();
+            } else {
+                alert("Error al ejecutar solicitud");
+            }
+        }).then(function (Data) {
+            console.log("entro aqui ultimo");
+            console.log(Data);
+            Get();
+        })
+    }
+
+    function OpenEdit(codigoCriterio, descripcionCriterio, pesoCriterio) {
+        document.getElementById("Id").value = codigoCriterio;
+        document.getElementById("Descripcion").value = descripcionCriterio;
+        document.getElementById("Peso").value = pesoCriterio;
+    }
+
+    function prepararEditar(criterioId) {
+
+        const criterio = criterios.find(x => x.codigoCriterio == criterioId);
+
+        if (criterio != undefined) {
+
+            document.getElementById("Id").value = criterio.codigoCriterio;
+            document.getElementById("Descripcion").value = criterio.descripcionCriterio;
+            document.getElementById("Peso").value = criterio.pesoCriterio;
+        }
+    }
+
+
+    function Edit() {
+        fetch(url4, {
+            method: "Put",
+            body: JSON.stringify({
+                CodigoCriterio: document.getElementById("Id").value,
+                DescripcionCriterio: document.getElementById("Descripcion").value,
+                PesoCriterio: document.getElementById("Peso").value
+            }),
+            headers: {
+                'Accept': "application/json",
+                "Content-type": "application/json"
+            }
+        }).then(function (response) {
+            if (response.ok) {
+                return response.text();
+            } else {
+                alert("Error al ejecutar solicitud");
+            }
+        }).then(function (Data) {
+            console.log("entro aqui ultimo");
+            console.log(Data);
+            Get();
+            llenarTabla();
+            document.getElementById("Id").value = "";
+            document.getElementById("Descripcion").value = "";
+            document.getElementById("Peso").value = "";
+
+        })
+    }
+
+    function Get() {
+        fetch(url1).then(function (response) {
+            return response.json();
+        }).then(function (Data) {
+            document.getElementById("divLista").innerHTML = "";
+            for (i = 0; i < Data.length; i++) {
+                let divElement = document.createElement("div");
+                let divSpan = document.createElement("span");
+                let divButtonDelete = document.createElement("button");
+                let divButtonEdit = document.createElement("button");
+                divSpan.innerHTML = Data[i].descripcionCriterio + " " + Data[i].pesoCriterio;
+                divButtonDelete.innerHTML = "Eliminar";
+                divButtonDelete.MiId = Data[i].codigoCriterio;
+                divButtonDelete.addEventListener("click", function (mibutton) {
+                    Delete(mibutton.target.MiId);
+                });
+                divButtonEdit.innerHTML = "Editar";
+                divButtonEdit.MiId = Data[i].codigoCriterio;
+                divButtonEdit.MiDescripcion = Data[i].descripcionCriterio;
+                divButtonEdit.MiPeso = Data[i].pesoCriterio;
+                divButtonEdit.addEventListener("click", function (mibutton) {
+                    OpenEdit(
+                        mibutton.target.MiId,
+                        mibutton.target.MiDescripcion,
+                        mibutton.target.MiPeso
+                    );
+                });
+                divElement.appendChild(divSpan);
+                divElement.appendChild(divButtonDelete);
+                divElement.appendChild(divButtonEdit);
+                document.getElementById("divLista").appendChild(divElement);
+            }
+
+        })
+    }
+
+</script>
